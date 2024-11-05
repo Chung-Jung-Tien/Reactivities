@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 import ActivityDetailedHeader from "./ActuvutyDetailedHeader";
 import ActivityDetailedInfo from "./ActivityDetailedInfo";
 import ActivityDetailedChat from "./ActivityDeatiledChat";
-import ActivityDetailedSidebar from "./ActivityDetailedSideBar";
+import ActivityDetailedSidebar from "./ActivityDetailedSidebar";
 
 
 export default observer (function ActivityDetails()
@@ -30,7 +30,7 @@ export default observer (function ActivityDetails()
                  <ActivityDetailedChat />
              </Grid.Column>
              <Grid.Column width={6}>
-                 <ActivityDetailedSidebar />
+                 <ActivityDetailedSidebar activity={activity}/>
              </Grid.Column>
          </Grid>
     )

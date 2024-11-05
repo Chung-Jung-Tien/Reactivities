@@ -1,4 +1,4 @@
-using Application.Acticities;
+ using Application.Acticities;
 using Application.Activities;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
@@ -28,7 +28,8 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Create.Command{Activity = activity}));
         }
 
-        [Authorize(Policy = "IsActivityHost")]
+        // [Authorize(Policy = "IsActivityHost")]
+        // lesson 165，還是不能用自訂的 Policy
         [HttpPut("{id}")]
         public async Task<IActionResult> EdtiActivity(Guid id, Activity activity)
         {
@@ -36,7 +37,8 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Edit.Command{Activity = activity}));
         }
 
-        [Authorize(Policy = "IsActivityHost")]
+        // [Authorize(Policy = "IsActivityHost")]
+        // lesson 165，還是不能用自訂的 Policy
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteActiviy(Guid id)
         {

@@ -5,7 +5,6 @@ using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
-using AutoMapper.QueryableExtensions;
 
 namespace Application.Acticities
 {

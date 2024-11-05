@@ -26,11 +26,12 @@ namespace Infrastructure.Security
         {
             string userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if(userId == null) return Task.CompletedTask; //not meet the authorization requirement
+            if(userId == null) return Task.CompletedTask; //user is not meet the authorization requirement
 
             Guid activityId = Guid.Parse(_httpContextAccessor.HttpContext?.Request.RouteValues
                 .SingleOrDefault(x => x.Key == "id").Value?.ToString());
 
+            // var attendee = _dbContext.ActivityAttendees.FindAsync(userId, activityId).Result; 
             ActivityAttendee attendee = _dbContext.ActivityAttendees
                 .AsNoTracking()
                 .SingleOrDefaultAsync(x => x.AppUserId == userId && x.ActivityId == activityId)
