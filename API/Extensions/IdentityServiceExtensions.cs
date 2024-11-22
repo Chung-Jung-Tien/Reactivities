@@ -31,6 +31,22 @@ namespace API.Extensions
                         ValidateIssuer = false,
                         ValidateAudience = false
                     };
+                    //for SignalR
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context => {
+                            //SignalR the client side is going to pass our token in the query string using the key 'access_token'
+                            var accessToken = context.Request.Query["access_token"];  //spelling is important!!
+
+                            var path = context.HttpContext.Request.Path;
+
+                            if(!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chat"))
+                            {
+                                 context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
             });
 
             services.AddAuthorization(options => {
