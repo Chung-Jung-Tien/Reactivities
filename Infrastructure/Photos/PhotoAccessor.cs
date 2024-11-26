@@ -4,7 +4,6 @@ using Application.Photos;
 using Microsoft.Extensions.Options;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
-using CloudinaryDotNet.Actions;
 
 namespace Infrastructure.Photos
 {

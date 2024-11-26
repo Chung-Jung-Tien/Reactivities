@@ -1,5 +1,6 @@
 using Application.Activities;
 using Application.Core;
+using Application.interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
@@ -16,9 +17,11 @@ namespace Application.Acticities
         {
             private readonly DataContext _context;
             private readonly IMapper _mapper;
+            private readonly IUserAccessor _userAccessor;
 
-            public Handler(DataContext context, IMapper mapper)
+            public Handler(DataContext context, IMapper mapper, IUserAccessor userAccessor)
             {
+                _userAccessor = userAccessor;
                 _mapper = mapper;
                 _context = context;
             }
@@ -33,7 +36,7 @@ namespace Application.Acticities
                 // var activitiesToReturn = _mapper.Map<List<ActivityDto>>(activities);
 
                 var activities = await _context.Activities
-                    .ProjectTo<ActivityDto>(_mapper.ConfigurationProvider)
+                    .ProjectTo<ActivityDto>(_mapper.ConfigurationProvider, new {currentUsername = _userAccessor.GetUsername()})
                     .ToListAsync(cancellationToken);
 
                 return Result<List<ActivityDto>>.Success(activities);
