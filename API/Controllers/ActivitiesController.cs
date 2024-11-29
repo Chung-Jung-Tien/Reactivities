@@ -1,5 +1,6 @@
  using Application.Acticities;
 using Application.Activities;
+using Application.Core;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,9 +10,9 @@ namespace API.Controllers
     public class ActivitiesController : BaseAPIController
     {
         [HttpGet] //api/activities
-        public async Task<IActionResult> GetActivities()
+        public async Task<IActionResult> GetActivities([FromQuery]ActivityParams param)
         {
-            return HandleResult(await Mediator.Send(new List.Query())) ;
+            return HandlePagedResult(await Mediator.Send(new List.Query{Params = param})) ;
         }
 
         [HttpGet("{id}")] //api/activities/id
@@ -28,7 +29,7 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Create.Command{Activity = activity}));
         }
 
-        // [Authorize(Policy = "IsActivityHost")]
+        [Authorize(Policy = "IsActivityHost")]
         // lesson 165，還是不能用自訂的 Policy
         [HttpPut("{id}")]
         public async Task<IActionResult> EdtiActivity(Guid id, Activity activity)
@@ -37,7 +38,7 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Edit.Command{Activity = activity}));
         }
 
-        // [Authorize(Policy = "IsActivityHost")]
+        [Authorize(Policy = "IsActivityHost")]
         // lesson 165，還是不能用自訂的 Policy
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteActiviy(Guid id)

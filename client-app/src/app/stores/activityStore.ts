@@ -1,9 +1,10 @@
-import { makeAutoObservable, runInAction } from "mobx";
+import { makeAutoObservable, reaction, runInAction } from "mobx";
 import { Activity, ActivityFormValues } from "../models/activity";
 import agent from "../api/agent";
 import { format } from "date-fns";
 import { store } from "./store";
 import { Profile } from "../models/profile";
+import { Pagination, PagingParams } from "../models/pagination";
 
 export default class ActivityStore{
     activityRegistry = new Map<string, Activity>();
@@ -11,9 +12,71 @@ export default class ActivityStore{
     editMode = false;
     loading =false;
     loadingInitial = false;
+    pagination: Pagination | null = null; 
+    pagingParams = new PagingParams();
+    predicate = new Map().set('all', true);
 
     constructor () {
-        makeAutoObservable(this)
+        makeAutoObservable(this);
+
+        //mobx
+        //We dont't want to react when the initional predicate is set
+        //but any time it changes we want to react that
+        reaction(
+            //要被監聽有沒有變化的參數
+            () => this.predicate.keys(), 
+            //偵測到變化以後，做出反應的方程式
+            () => {
+                this.pagingParams = new PagingParams();//重設所有的參數，重新查詢
+                this.activityRegistry.clear();//將記憶體裡面的資料清空
+                this.loadActivities();//清空以後，重新抓所有資料，放進記憶體裡面
+            }
+        )
+    }
+
+    setPagingParams = (pagingParams: PagingParams) => {
+        this.pagingParams = pagingParams;
+    } 
+
+    setPredicate = (predicate: string, value: string | Date) => {
+        const resetPredicate = () => {
+            this.predicate.forEach((value, key) => {
+                if (key !== 'startDate') this.predicate.delete(key);
+            })
+        }
+        switch (predicate)
+        {
+            case 'all':
+                resetPredicate();
+                this.predicate.set('all', true);
+                break;
+            case 'isGoing':
+                resetPredicate();
+                this.predicate.set('isGoing', true);
+                break;
+            case 'isHost':
+                resetPredicate();
+                this.predicate.set('isHost', true);
+                break;
+            case 'startDate':
+                this.predicate.delete('startDate');//為的是要在 mobx reaction() 裡面對這個參數做出反應，直接set()不行，要刪掉再加入才可以
+                this.predicate.set('startDate', value);
+                break;
+        }
+    }
+
+    get axiosParams() {
+        const params = new URLSearchParams();
+        params.append('pageNumber', this.pagingParams.pageNumber.toString());
+        params.append('pageSize', this.pagingParams.pageSize.toString());
+        this.predicate.forEach((value, key) => {
+            if (key === 'startDate') {
+                params.append(key, (value as Date).toISOString());
+            } else {
+                params.append(key, value);
+            }
+        })
+        return params;
     }
 
     get activitiesByDate(){
@@ -33,16 +96,21 @@ export default class ActivityStore{
     loadActivities = async () => {
         this.setLoadingInitial(true);
         try{
-            const activities = await agent.Activities.list();
-            activities.forEach(activity => {
+            const result = await agent.Activities.list(this.axiosParams);
+            result.data.forEach(activity => {
                 this.setActivity(activity);
             })
+            this.setPagination(result.pagination);
             this.setLoadingInitial(false);
 
         }catch(error){
             console.log(error);
             this.setLoadingInitial(false);
         }
+    }
+
+    setPagination = (pagination: Pagination) => {
+        this.pagination = pagination;
     }
 
     loadActivity = async(id: string) =>{
