@@ -1,24 +1,22 @@
-
 import { useField } from "formik";
-import React from "react";
 import { Form, Label } from "semantic-ui-react";
-import DatePicker, {ReactDatePickerProps} from "react-datepicker";
+import DatePicker, {DatePickerProps} from "react-datepicker";
 
-
-
-export default function MyDateInput(props : Partial<ReactDatePickerProps>){
-    const [field, mata, helpers] = useField(props.name!);
+export default function MyDateInput(props : DatePickerProps){
+    // const [field, meta, helpers] = useField(props.name!);
+    const [field, meta] = useField(props.name!);
+    
     return (
-        <Form.Field error={mata.touched && !! mata.error}>
+        <Form.Field error={meta.touched && !! meta.error}>
             <DatePicker 
                 {...field}
                 {...props}
-                selected={(field.value && new Date(field.value)) || null}
-                onChange={value=> helpers.setValue(value)}
+                selected={(field.value ? new Date(field.value) : null)}
+                // onChange={(value)=> helpers.setValue(value)}
             />
 
-            {mata.touched && mata.error ? (
-                <Label basic color="red">{mata.error}</Label>
+            {meta.touched && meta.error ? (
+                <Label basic color="red">{meta.error}</Label>
             ) : null}
         </Form.Field>
     )

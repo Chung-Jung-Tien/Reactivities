@@ -122,7 +122,7 @@ export default class ProfileStore {
             store.activityStore.udpateAttendeeFollowing(username);
             runInAction(() => {
                 if (this.profile && this.profile.username !== store.userStore.user?.username && this.profile.username === username) {
-                    following ? this.profile.followerCount++ : this.profile.followerCount--;
+                    following ? this.profile.followersCount++ : this.profile.followersCount--;
                     this.profile.following = !this.profile.following;
                 }
 
@@ -132,7 +132,7 @@ export default class ProfileStore {
 
                 this.followings.forEach(profile => {
                     if (profile.username === username) {
-                        profile.following ? profile.followerCount-- : profile.followerCount++;
+                        profile.following ? profile.followersCount-- : profile.followersCount++;
                         profile.following = !profile.following;
                     }
                 })

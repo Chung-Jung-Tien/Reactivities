@@ -13,10 +13,11 @@ const sleep = (delay: number) =>{
     })
 }
 
-axios.defaults.baseURL = 'http://localhost:5000/api';
+axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
 axios.interceptors.response.use(async response => {
-    await sleep(1000);
+    if(import.meta.env.DEV) await sleep(1000);
+    
     const pagination = response.headers['pagination'];
     if (pagination) { //header 有包含 'pagination' 的才要處理分頁(pagination)
         response.data = new PaginatedResult(response.data, JSON.parse(pagination));

@@ -40,8 +40,11 @@ export default class ActivityStore{
 
     setPredicate = (predicate: string, value: string | Date) => {
         const resetPredicate = () => {
-            this.predicate.forEach((value, key) => {
-                if (key !== 'startDate') this.predicate.delete(key);
+            this.predicate.forEach((val, key) => {
+                if (key !== 'startDate') {
+                    console.log(val);//為了build不要報錯
+                    this.predicate.delete(key);
+                }
             })
         }
         switch (predicate)
@@ -251,7 +254,7 @@ export default class ActivityStore{
         this.activityRegistry.forEach(activity => {
             activity.attendees?.forEach(attendee => {
                 if (attendee.username === username) {
-                    attendee.following ? attendee.followerCount-- : attendee.followerCount++;
+                    attendee.following ? attendee.followersCount-- : attendee.followersCount++;
                     attendee.following = !attendee.following;
                 }
             })

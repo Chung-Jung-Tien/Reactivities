@@ -32,11 +32,14 @@ if (app.Environment.IsDevelopment())
 app.UseCors("CorsPolicy");
 
 app.UseAuthentication();
-app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseDefaultFiles();//從 wwwroot 裡面抓整個網頁的進入點
+app.UseStaticFiles();//從 wwwroot 裡面抓 static content
 
 app.MapControllers();
-
 app.MapHub<ChatHub>("/chat"); //SignalR
+app.MapFallbackToController("Index", "Fallback");
 
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;

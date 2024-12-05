@@ -78,7 +78,7 @@ export default observer(function ActivityForm() {
                         <MyTextArea rows={3} placeholder='Description' name='description' />
                         <MySelectInput options={categoryOptions} placeholder='Catgory' name='category' />
                         <MyDateInput
-                             placeholder='Date' 
+                             //placeholder='Date' 
                              name='date'
                              showTimeSelect
                              timeCaption='time'
