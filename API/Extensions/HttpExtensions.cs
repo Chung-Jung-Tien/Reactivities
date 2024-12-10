@@ -19,10 +19,10 @@ namespace API.Extensions
             };
 
              //this is a custom 'Header', 要 Expose 才可以確保 browser 可以讀，不然會看不見
-             response.Headers.Add("Pagination", JsonSerializer.Serialize(paginationHeader)); 
+             response.Headers.Append("Pagination", JsonSerializer.Serialize(paginationHeader)); 
 
              //Expose to the 'Header'
-             response.Headers.Add("Access-Control-Expose-Headers", "Pagination"); //拼寫要完全正確
+             response.Headers.Append("Access-Control-Expose-Headers", "Pagination"); //拼寫要完全正確
         }
     }
 }
