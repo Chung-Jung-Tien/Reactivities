@@ -23,10 +23,35 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 app.UseMiddleware<ExceptionMiddleWare>();
 
+//都是為了增加網路資安的
+app.UseXContentTypeOptions();//Prevent mine sniffing of the content type
+app.UseReferrerPolicy(opt => opt.NoReferrer());//this policy allows a site to control how much information the browser includes when navigating away from our app.
+app.UseXXssProtection(opt => opt.EnabledWithBlockMode());//this is going to add a cross-site scripting protection header
+app.UseXfo(opt => opt.Deny());//this is going to prevent our app being used inside an iframe whitch against that click jacking
+//網站引用外部資源的白名單
+app.UseCsp(opt => opt
+    .BlockAllMixedContent()//force our app only to load 'https' content
+    .StyleSources(s => s.Self().CustomSources("https://fonts.googleapis.com"))//s.Self():sources from our domin is OK, CustomSources():白名單
+    .FontSources(s => s.Self().CustomSources("https://fonts.gstatic.com", "data:"))
+    .FormActions(s => s.Self())
+    .FrameAncestors(s => s.Self())
+    .ImageSources(s => s.Self().CustomSources("blob:", "https://res.cloudinary.com"))
+    .ScriptSources(s => s.Self())
+);
+
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+else 
+{
+    app.Use(async (context, next) => 
+    {
+        context.Response.Headers.Add("Strict-Transport-Security", "max-age=31536000");
+        await next.Invoke();
+    });
 }
 
 app.UseCors("CorsPolicy");
